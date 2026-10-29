@@ -37,6 +37,12 @@ playwright/.cache/
 screenshots/
 recordings/
 
+# Runtime database & logs
+*.db
+*.log
+backend/*.log
+backend/*.db
+
 # IDE & OS
 .DS_Store
 .idea/

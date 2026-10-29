@@ -1,13 +1,15 @@
 import os
 import json
 import asyncio
+from contextlib import asynccontextmanager
 from typing import Dict, Any, List
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from backend.config import PORT, HOST, STATIC_DIR, GEMINI_API_KEY, OPENAI_API_KEY
+from backend.config import PORT, HOST, STATIC_DIR, GEMINI_API_KEY, OPENAI_API_KEY, DB_PATH
+from backend.database.db import init_db, check_db_health
 from backend.models.schemas import (
     InspectRequest,
     PageInspectionResult,
@@ -21,10 +23,19 @@ from backend.services.ai_generator import generate_test_suite
 from backend.services.test_runner import run_live_test
 from backend.services.sample_apps import get_demo_shop_html
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize SQLite schema on startup
+    await init_db()
+    yield
+
+
 app = FastAPI(
     title="TestPilot AI — API Engine",
     description="Autonomous Web Test Case & Bug Script Generation Platform (PS-03)",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # CORS configuration
@@ -55,8 +66,11 @@ async def root():
 
 @app.get("/api/health")
 async def health():
+    db_ok = await check_db_health()
     return {
-        "status": "healthy",
+        "status": "healthy" if db_ok else "degraded",
+        "database": "connected (sqlite)" if db_ok else "disconnected",
+        "db_path": str(DB_PATH),
         "has_gemini_key": bool(GEMINI_API_KEY),
         "has_openai_key": bool(OPENAI_API_KEY),
         "fallback_engine": "active (AST Heuristic)",

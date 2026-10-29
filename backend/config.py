@@ -26,3 +26,15 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 AI_PROVIDER = os.getenv("AI_PROVIDER", "hybrid").lower()
 HEADLESS = os.getenv("HEADLESS", "true").lower() in ("true", "1", "yes")
 BROWSER_TIMEOUT_MS = int(os.getenv("BROWSER_TIMEOUT_MS", 30000))
+
+# Database configuration
+DB_PATH = BASE_DIR / "testpilot.db"
+
+# Security Allowlist for Test Execution
+ALLOWLISTED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    "saucedemo.com",
+    "the-internet.herokuapp.com"
+]
