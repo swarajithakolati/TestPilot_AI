@@ -1,0 +1,3 @@
+# TestPilot AI root requirements
+# Proxies to backend/requirements.txt for seamless deployment platforms (Render, Railway, etc.)
+-r backend/requirements.txt

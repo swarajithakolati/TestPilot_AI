@@ -8,6 +8,8 @@ import LiveRunner from './components/LiveRunner';
 import BugReportModal from './components/BugReportModal';
 import { Layers, Activity, Code2, Terminal } from 'lucide-react';
 
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+
 export default function App() {
   const [url, setUrl] = useState('http://127.0.0.1:8000/demo/shop');
   const [presets, setPresets] = useState([]);
@@ -29,7 +31,7 @@ export default function App() {
 
   // Fetch presets and health on mount
   useEffect(() => {
-    fetch('/api/presets')
+    fetch(`${API_BASE}/api/presets`)
       .then(res => res.json())
       .then(data => {
         setPresets(data);
@@ -39,7 +41,7 @@ export default function App() {
       })
       .catch(err => console.error('Failed to load presets:', err));
 
-    fetch('/api/health')
+    fetch(`${API_BASE}/api/health`)
       .then(res => res.json())
       .then(data => setApiHealth(data))
       .catch(err => console.error('Failed to check health:', err));
@@ -49,7 +51,7 @@ export default function App() {
   const handleInspectOnly = async (targetUrl) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/inspect', {
+      const res = await fetch(`${API_BASE}/api/inspect`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: targetUrl, wait_time_ms: 2000 })
@@ -70,7 +72,7 @@ export default function App() {
     setLoading(true);
     try {
       // Step 1: Inspect DOM
-      const inspRes = await fetch('/api/inspect', {
+      const inspRes = await fetch(`${API_BASE}/api/inspect`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: targetUrl, wait_time_ms: 2000 })
@@ -80,7 +82,7 @@ export default function App() {
       setInspection(inspData);
 
       // Step 2: Generate Test Suite
-      const genRes = await fetch('/api/generate', {
+      const genRes = await fetch(`${API_BASE}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -111,7 +113,7 @@ export default function App() {
     setActiveTab('runner');
 
     try {
-      const res = await fetch('/api/execute', {
+      const res = await fetch(`${API_BASE}/api/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

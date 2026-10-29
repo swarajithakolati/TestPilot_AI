@@ -3,7 +3,7 @@
  * Provides centralized, type-safe communication with the FastAPI backend.
  */
 
-const API_BASE = ''; // Proxied by Vite to http://127.0.0.1:8000
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
 
 export async function checkApiHealth() {
   const res = await fetch(`${API_BASE}/api/health`);

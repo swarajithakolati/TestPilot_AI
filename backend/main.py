@@ -1,4 +1,13 @@
 import os
+import sys
+from pathlib import Path
+
+# Ensure project root is in sys.path so modules can be imported as `backend.*`
+# regardless of whether uvicorn is launched from the root or from inside backend/
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import json
 import asyncio
 from contextlib import asynccontextmanager
